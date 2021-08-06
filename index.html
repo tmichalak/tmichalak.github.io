@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FPGA tool perf results</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0/dist/chart.min.js"></script>
+</head>
+<style>
+  .flex-graphs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .flex-graphs div {
+    width: 31vw;
+    max-width: 31vw;
+    max-height: 50vh;
+    margin: 1vh 1vw 1vw 1vh;
+  }
+</style>
+
+<body>
+  <canvas id="runtime-chart" width="300" height="150"></canvas>
+  <canvas id="frequency-chart", width="300" height="150"></canvas>
+  <div class="flex-graphs">
+    <div>
+      <canvas id="LUT-chart"></canvas>
+    </div>
+    <div>
+      <canvas id="DFF-chart"></canvas>
+    </div>
+    <div>
+      <canvas id="CARRY-chart"></canvas>
+    </div>
+    <div>
+      <canvas id="IOB-chart"></canvas>
+    </div>
+    <div>
+      <canvas id="BRAM-chart"></canvas>
+    </div>
+    <div>
+      <canvas id="PLL-chart"></canvas>
+    </div>
+    <div>
+      <canvas id="GLB-chart"></canvas>
+    </div>
+  </div>
+
+  <script>
+
+  function newLineChart(canvas_name, title, unitstr, labels, datasets) {
+    return new Chart(document.getElementById(canvas_name), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: title
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: function(v, idx, vx) {
+                return v + unitstr;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  newLineChart(
+    "runtime-chart",
+    "project: total runtime",
+    "s",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 2377.751, 1708.886, 2080.341, 1814.267, 1878.508, 1848.729, 1843.388, 2704.103, 2586.542, 1882.828 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 193.13, 249.65, 174.6, 186.78, 189.55, 215.5, 200.9, 189.71, 252.6, 168.16 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 257.555, 246.084, 239.21, 275.079, 240.175, 240.657, 249.295, 518.333, 380.561, 238.286 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 126.97, 146.288, 75.464, 179.927, 69.411, 150.426, 75.568, 80.213, 110.674, 74.462 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 2311.284, 2239.148, 1887.125, 2018.808, 1996.723, 3051.415, 2043.271, 1919.295, 2102.623, 2469.533 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 82.41, 121.122, 91.147, 74.891, 61.521, 74.186, 117.967, 157.57, 68.35, 92.02 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 1329.996, 1282.522, 2098.968, 1427.753, 1342.278, 1315.625, 1611.121, 1651.689, 1170.865, 1442.823 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 629.539, 698.969, 805.61, 495.718, 493.931, 1101.287, 630.999, 703.695, 456.051, 520.042 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 540.03, 945.797, 535.738, 523.412, 511.444, 470.339, 561.581, 477.17, 749.016, 653.858 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 628.614, 323.655, 254.809, 294.649, 269.154, 289.198, 334.493, 542.623, 451.827, 265.426 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 250.461, 361.394, 236.537, 234.775, 211.447, 397.236, 221.49, 246.477, 259.812, 239.452 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 190.89, 147.36, 172.08, 239.67, 127.97, 153.79, 169.78, 171.72, 157.78, 138.9 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+
+  newLineChart(
+    "frequency-chart",
+    "project: actual frequency",
+    "MHz",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 131.096, 131.096, 131.096, 131.096, 131.096, 131.096, 131.096, 131.096, 131.096, 131.096 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 154.488, 154.488, 154.488, 154.488, 154.488, 154.488, 154.488, 154.488, 154.488, 154.488 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 85.32, 85.32, 85.32, 85.32, 85.32, 85.32, 85.32, 85.32, 85.32, 85.32 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 77.59, 77.59, 77.59, 77.59, 77.59, 77.59, 77.59, 77.59, 77.59, 77.59 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 67.554, 66.84, 67.554, 66.84, 66.84, 66.84, 66.84, 66.84, 66.84, 66.84 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 67.22, 66.29, 67.22, 66.29, 66.29, 66.29, 66.29, 66.29, 66.29, 66.29 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 69.536, 69.536, 69.502, 69.502, 69.502, 69.502, 69.502, 69.502, 69.502, 69.502 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 150.67, 150.67, 150.67, 150.67, 150.67, 150.67, 150.67, 150.67, 150.67, 150.67 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 69.178, 68.226, 69.178, 68.226, 68.226, 68.226, 68.226, 68.226, 68.226, 68.226 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 135.685, 135.685, 135.685, 135.685, 135.685, 135.685, 135.685, 135.685, 135.685, 135.685 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+
+  newLineChart(
+    "LUT-chart",
+    "project: total LUT count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 2082, 2082, 2082, 2082, 2082, 2082, 2082, 2082, 2082, 2082 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 1161, 1161, 1161, 1161, 1161, 1161, 1161, 1161, 1161, 1161 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 967, 967, 967, 967, 967, 967, 967, 967, 967, 967 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 1389, 1389, 1389, 1389, 1389, 1389, 1389, 1389, 1389, 1389 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 2082, 2082, 2082, 2082, 2082, 2082, 2082, 2082, 2082, 2082 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 1389, 1389, 1389, 1389, 1389, 1389, 1389, 1389, 1389, 1389 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 967, 967, 967, 967, 967, 967, 967, 967, 967, 967 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166, 1166 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 1161, 1161, 1161, 1161, 1161, 1161, 1161, 1161, 1161, 1161 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+  newLineChart(
+    "DFF-chart",
+    "project: total DFF count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 2361, 2361, 2361, 2361, 2361, 2361, 2361, 2361, 2361, 2361 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 1097, 1097, 1097, 1097, 1097, 1097, 1097, 1097, 1097, 1097 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 1036, 1036, 1036, 1036, 1036, 1036, 1036, 1036, 1036, 1036 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 2361, 2361, 2361, 2361, 2361, 2361, 2361, 2361, 2361, 2361 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 1036, 1036, 1036, 1036, 1036, 1036, 1036, 1036, 1036, 1036 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081, 1081 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 1097, 1097, 1097, 1097, 1097, 1097, 1097, 1097, 1097, 1097 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+  newLineChart(
+    "CARRY-chart",
+    "project: total CARRY count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 50, 50, 50, 50, 50, 50, 50, 50, 50, 50 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 50, 50, 50, 50, 50, 50, 50, 50, 50, 50 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 57, 57, 57, 57, 57, 57, 57, 57, 57, 57 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+  newLineChart(
+    "IOB-chart",
+    "project: total IOB count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 35, 35, 35, 35, 35, 35, 35, 35, 35, 35 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+  newLineChart(
+    "BRAM-chart",
+    "project: total BRAM count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+  newLineChart(
+    "PLL-chart",
+    "project: total PLL count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+  newLineChart(
+    "GLB-chart",
+    "project: total GLB count",
+    "",
+    [ "1140", "1141", "1142", "1143", "1144", "1145", "1146", "1147", "1148", "1149" ],
+    
+    [
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 124" ,
+                borderColor: "#1e00c8",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 133" ,
+                borderColor: "#00da00",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 128" ,
+                borderColor: "#0647ff",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 125" ,
+                borderColor: "#cc9f00",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 123" ,
+                borderColor: "#df7400",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 126" ,
+                borderColor: "#004ed1",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 129" ,
+                borderColor: "#ff3701",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 131" ,
+                borderColor: "#00cdb1",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 130" ,
+                borderColor: "#d30058",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 127" ,
+                borderColor: "#ca3700",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 132" ,
+                borderColor: "#6900d5",
+                fill: false
+            },
+            {
+                data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+                label: "config 134" ,
+                borderColor: "#c4001b",
+                fill: false
+            },
+    ] 
+  );
+
+  </script>
+</body>
+</html>
